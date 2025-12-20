@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manager Appointment Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f1f0ff 0%, #d9eaff 100%);
+      --sidebar-bg: linear-gradient(160deg, #191428 0%, #070310 100%);
+      --card-bg: rgba(255, 255, 255, 0.72);
+      --glass-bg: rgba(255, 255, 255, 0.32);
+      --divider: rgba(17, 17, 36, 0.1);
+      --primary: #6755f3;
+      --primary-soft: rgba(103, 85, 243, 0.18);
+      --primary-strong: #4330d6;
+      --accent-green: #42c29b;
+      --accent-amber: #f7b640;
+      --text: #120f1c;
+      --muted: #6f6e77;
+      --surface-radius: 26px;
+      --soft-radius: 18px;
+      --small-radius: 14px;
+      --shadow-lg: 0 45px 85px -38px rgba(27, 25, 60, 0.55);
+      --shadow-md: 0 24px 60px -30px rgba(40, 38, 90, 0.4);
+      color-scheme: light;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .app-shell {
+      width: min(1200px, 100%);
+      min-height: min(780px, 100vh - 64px);
+      background: rgba(255, 255, 255, 0.48);
+      border-radius: 32px;
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow-lg);
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      overflow: hidden;
+    }
+
+    aside {
+      background: var(--sidebar-bg);
+      color: white;
+      padding: 32px 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: 0.03em;
+    }
+
+    .brand-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #6f59f4 0%, #8f79ff 40%, #f399ec 100%);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    nav h2 {
+      margin: 0 0 18px;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .nav-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-list button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--soft-radius);
+      background: transparent;
+      border: 1px solid transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      transition: background 180ms ease, transform 180ms ease, border-color 180ms ease;
+    }
+
+    .nav-list button:hover,
+    .nav-list button:focus-visible {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255,255,255,0.12);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .nav-list button[aria-current="page"] {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255,255,255,0.28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+
+    .nav-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      display: grid;
+      place-items: center;
+      font-size: 0.9rem;
+    }
+
+    .plan-card {
+      margin-top: auto;
+      padding: 22px;
+      background: linear-gradient(150deg, rgba(255,255,255,0.16) 0%, rgba(139,114,241,0.32) 100%);
+      border-radius: var(--surface-radius);
+      border: 1px solid rgba(255,255,255,0.28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.28);
+      display: grid;
+      gap: 12px;
+    }
+
+    .plan-card strong {
+      font-size: 1.8rem;
+    }
+
+    .progress {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.2);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress span {
+      position: absolute;
+      inset: 0;
+      width: 72%;
+      background: linear-gradient(135deg, #fff 0%, #b7a4ff 100%);
+      border-radius: inherit;
+    }
+
+    main {
+      padding: 32px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 24px;
+      background: transparent;
+    }
+
+    header.top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .calendar-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .calendar-controls h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid var(--divider);
+      background: white;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .icon-btn:hover,
+    .icon-btn:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      outline: none;
+    }
+
+    .search {
+      flex: 1 1 220px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: white;
+      border-radius: var(--soft-radius);
+      border: 1px solid var(--divider);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .search input {
+      border: none;
+      outline: none;
+      flex: 1;
+      font: inherit;
+      color: var(--text);
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .primary-btn,
+    .ghost-btn {
+      border-radius: var(--soft-radius);
+      padding: 12px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-size: 0.95rem;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #6f59f4 0%, #8f79ff 100%);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .primary-btn:hover,
+    .primary-btn:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 32px -14px rgba(103, 85, 243, 0.55);
+      outline: none;
+    }
+
+    .ghost-btn {
+      background: white;
+      border-color: var(--divider);
+      color: var(--text);
+    }
+
+    .ghost-btn:hover,
+    .ghost-btn:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+      outline: none;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 22px;
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border-radius: var(--surface-radius);
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(18px);
+    }
+
+    .calendar { display: grid; gap: 18px; }
+
+    .calendar header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+    }
+
+    .weekdays,
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .weekdays span {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+
+    .day {
+      background: white;
+      border-radius: var(--small-radius);
+      padding: 12px 10px;
+      text-align: center;
+      border: 1px solid rgba(18, 15, 28, 0.06);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .day::after {
+      content: attr(data-count);
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: var(--primary-soft);
+      border-radius: 999px;
+      padding: 4px 8px;
+      display: none;
+    }
+
+    .day[data-count]:not([data-count="0"])::after {
+      display: inline-flex;
+    }
+
+    .day:hover,
+    .day:focus-visible {
+      transform: translateY(-3px);
+      border-color: rgba(103, 85, 243, 0.35);
+      box-shadow: 0 18px 35px -20px rgba(103, 85, 243, 0.5);
+      outline: none;
+    }
+
+    .day.selected {
+      background: linear-gradient(135deg, rgba(103,85,243,0.12) 0%, rgba(103,85,243,0.28) 100%);
+      border-color: rgba(103, 85, 243, 0.55);
+    }
+
+    .day.today {
+      border-color: rgba(66, 194, 155, 0.6);
+    }
+
+    .day span { font-weight: 600; font-size: 1rem; }
+
+    .availability {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .appointments {
+      display: grid;
+      gap: 16px;
+      max-height: 340px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .appointment-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: var(--soft-radius);
+      padding: 18px;
+      border: 1px solid rgba(12, 12, 28, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+      display: grid;
+      gap: 10px;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .appointment-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px -24px rgba(27, 25, 60, 0.35);
+    }
+
+    .appointment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .pill--status-confirmed { background: rgba(66,194,155,0.16); color: #219a72; }
+    .pill--status-pending { background: rgba(247,182,64,0.2); color: #b07b0c; }
+    .pill--status-cancelled { background: rgba(231,85,109,0.2); color: #c23c52; }
+
+    .appointment-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .tags span {
+      background: rgba(103,85,243,0.12);
+      color: var(--primary-strong);
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+
+    .detail-panel {
+      display: grid;
+      gap: 22px;
+    }
+
+    .detail-header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .detail-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .detail-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .attendee-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .attendee {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: var(--soft-radius);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(17, 17, 36, 0.08);
+    }
+
+    .attendee strong { font-size: 0.95rem; }
+
+    .attendee span {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .attendee button {
+      border: none;
+      background: rgba(103, 85, 243, 0.12);
+      color: var(--primary-strong);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 160ms ease;
+    }
+
+    .attendee button:hover,
+    .attendee button:focus-visible {
+      background: rgba(103,85,243,0.22);
+      outline: none;
+    }
+
+    .share-panel {
+      border-radius: var(--soft-radius);
+      padding: 18px;
+      background: rgba(103, 85, 243, 0.12);
+      border: 1px solid rgba(103,85,243,0.24);
+      display: grid;
+      gap: 12px;
+    }
+
+    .share-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .share-row label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .share-targets {
+      display: grid;
+      gap: 10px;
+    }
+
+    .share-target {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: var(--small-radius);
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(17,17,36,0.08);
+    }
+
+    .share-target span {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 48px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.15);
+      transition: background 160ms ease;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle span {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: white;
+      left: 2px;
+      top: 2px;
+      transition: transform 160ms ease;
+      box-shadow: 0 6px 14px rgba(17,17,36,0.25);
+    }
+
+    .toggle input:checked + span {
+      transform: translateX(22px);
+    }
+
+    .toggle input:checked ~ .toggle-bg {
+      background: var(--primary);
+    }
+
+    .toggle-bg {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      transition: background 160ms ease;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      display: grid;
+      gap: 12px;
+    }
+
+    .empty-state strong { color: var(--text); }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 15, 28, 0.35);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 20;
+    }
+
+    .modal {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 24px;
+      padding: 24px;
+      max-width: 420px;
+      width: min(420px, 100%);
+      display: grid;
+      gap: 16px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .modal form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .modal label {
+      display: grid;
+      gap: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .modal input,
+    .modal textarea,
+    .modal select {
+      border-radius: var(--soft-radius);
+      border: 1px solid rgba(17, 17, 36, 0.12);
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    .modal textarea { min-height: 90px; resize: vertical; }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .secondary-btn {
+      border-radius: var(--soft-radius);
+      padding: 10px 18px;
+      background: rgba(17,17,36,0.05);
+      border: 1px solid rgba(17,17,36,0.12);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .secondary-btn:hover,
+    .secondary-btn:focus-visible {
+      background: rgba(17,17,36,0.1);
+      outline: none;
+    }
+
+    @media (max-width: 1100px) {
+      .app-shell {
+        grid-template-columns: 220px 1fr;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 16px; }
+      .app-shell {
+        grid-template-columns: 1fr;
+        min-height: unset;
+      }
+
+      aside {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 18px;
+        align-items: center;
+      }
+
+      nav {
+        order: 3;
+        width: 100%;
+      }
+
+      .plan-card { order: 2; width: 100%; }
+      .brand { order: 1; width: 100%; justify-content: space-between; }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 580px) {
+      header.top-bar { flex-direction: column; align-items: stretch; }
+      .action-group { width: 100%; justify-content: space-between; }
+      .primary-btn, .ghost-btn { flex: 1; text-align: center; }
+      .calendar-controls { width: 100%; justify-content: space-between; }
+      .weekdays, .days { gap: 6px; }
+      .day { padding: 10px 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside>
+      <div class="brand">
+        <span class="brand-badge">AM</span>
+        Apex Meetings
+      </div>
+      <nav>
+        <h2>Dashboard</h2>
+        <ul class="nav-list">
+          <li><button type="button" aria-current="page"><span class="nav-icon">🏠</span>Overview</button></li>
+          <li><button type="button"><span class="nav-icon">📅</span>Calendar</button></li>
+          <li><button type="button"><span class="nav-icon">📝</span>Notes</button></li>
+          <li><button type="button"><span class="nav-icon">👥</span>Clients</button></li>
+        </ul>
+      </nav>
+      <nav>
+        <h2>Management</h2>
+        <ul class="nav-list">
+          <li><button type="button"><span class="nav-icon">🧾</span>Invoices</button></li>
+          <li><button type="button"><span class="nav-icon">⚙️</span>Settings</button></li>
+          <li><button type="button"><span class="nav-icon">❓</span>Support</button></li>
+        </ul>
+      </nav>
+      <section class="plan-card">
+        <span>Weekly quota</span>
+        <strong>68%</strong>
+        <div class="progress"><span></span></div>
+        <p style="margin:0;font-size:0.85rem;line-height:1.5;">You have 12 more slots available this week. Keep momentum going!</p>
+      </section>
+    </aside>
+    <main>
+      <header class="top-bar">
+        <div class="calendar-controls">
+          <button class="icon-btn" id="prev-month" aria-label="Previous month">‹</button>
+          <div>
+            <h1 id="month-label">March 2024</h1>
+            <span style="display:block;font-size:0.85rem;color:var(--muted);">Weekly overview &amp; availability</span>
+          </div>
+          <button class="icon-btn" id="next-month" aria-label="Next month">›</button>
+        </div>
+        <div class="search" role="search">
+          <span aria-hidden="true">🔍</span>
+          <input type="search" id="search" placeholder="Search client or meeting" aria-label="Search appointments" />
+        </div>
+        <div class="action-group">
+          <button class="ghost-btn" id="share-toggle" type="button" aria-expanded="false" aria-controls="share-panel">Share calendar</button>
+          <button class="primary-btn" id="add-appointment" type="button">New appointment</button>
+        </div>
+      </header>
+      <section class="content-grid">
+        <section class="panel calendar" aria-label="Calendar overview">
+          <header>
+            <span>Week</span>
+            <span>Availability</span>
+          </header>
+          <div class="weekdays" aria-hidden="true">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
+          </div>
+          <div class="days" id="calendar-days"></div>
+          <div class="panel" style="background:rgba(255,255,255,0.6);padding:18px;border-radius:var(--soft-radius);display:grid;gap:10px;border:1px dashed rgba(103,85,243,0.35);">
+            <strong style="font-size:0.95rem;">Weekly availability tips</strong>
+            <p style="margin:0;font-size:0.85rem;color:var(--muted);line-height:1.5;">Keep Thursday afternoons open for discovery calls. High demand expected after marketing launch.</p>
+          </div>
+        </section>
+        <aside class="panel detail-panel" aria-live="polite">
+          <div class="detail-header">
+            <h2 id="detail-title">Select a date</h2>
+            <div class="detail-meta" id="detail-meta"></div>
+          </div>
+          <section>
+            <h3 style="margin:0 0 12px;font-size:1rem;">Scheduled</h3>
+            <div class="appointments" id="appointments"></div>
+          </section>
+          <section>
+            <h3 style="margin:0 0 12px;font-size:1rem;">Attendees</h3>
+            <div class="attendee-list" id="attendees"></div>
+          </section>
+          <section class="share-panel" id="share-panel" hidden>
+            <div class="share-row">
+              <label>
+                <span>Share link</span>
+              </label>
+              <div class="toggle">
+                <input type="checkbox" id="share-switch" />
+                <span></span>
+                <span class="toggle-bg"></span>
+              </div>
+            </div>
+            <div class="share-targets" id="share-targets" hidden>
+              <div class="share-target"><strong>Sales pod</strong><span>5 members</span></div>
+              <div class="share-target"><strong>Leadership</strong><span>3 members</span></div>
+              <div class="share-target"><strong>External consultants</strong><span>Pending approval</span></div>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <h2 id="modal-title">New appointment</h2>
+        <button class="icon-btn" type="button" id="close-modal" aria-label="Close">✕</button>
+      </div>
+      <form id="appointment-form">
+        <label>
+          Title
+          <input type="text" name="title" placeholder="Project review" required />
+        </label>
+        <label>
+          Date
+          <input type="date" name="date" required />
+        </label>
+        <label>
+          Time
+          <input type="time" name="time" required />
+        </label>
+        <label>
+          Status
+          <select name="status">
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Pending</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+        <label>
+          Attendees (comma separated)
+          <input type="text" name="attendees" placeholder="Alex Morgan, Jamie Lee" />
+        </label>
+        <label>
+          Notes
+          <textarea name="notes" placeholder="Agenda and preparation notes..."></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" id="cancel-modal">Cancel</button>
+          <button type="submit" class="primary-btn">Save appointment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const monthLabel = document.getElementById('month-label');
+    const calendarDays = document.getElementById('calendar-days');
+    const appointmentsContainer = document.getElementById('appointments');
+    const attendeesContainer = document.getElementById('attendees');
+    const detailTitle = document.getElementById('detail-title');
+    const detailMeta = document.getElementById('detail-meta');
+    const searchInput = document.getElementById('search');
+    const shareToggleBtn = document.getElementById('share-toggle');
+    const sharePanel = document.getElementById('share-panel');
+    const shareSwitch = document.getElementById('share-switch');
+    const shareTargets = document.getElementById('share-targets');
+    const modalBackdrop = document.getElementById('modal');
+    const addAppointmentBtn = document.getElementById('add-appointment');
+    const closeModalBtn = document.getElementById('close-modal');
+    const cancelModalBtn = document.getElementById('cancel-modal');
+    const appointmentForm = document.getElementById('appointment-form');
+    const prevMonthBtn = document.getElementById('prev-month');
+    const nextMonthBtn = document.getElementById('next-month');
+
+    const createId = () => (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+
+    const state = {
+      currentDate: new Date(),
+      selectedDate: null,
+      appointments: {
+        '2024-03-07': [
+          {
+            id: createId(),
+            time: '09:30',
+            title: 'Product discovery call',
+            status: 'confirmed',
+            notes: 'Discuss MVP requirements and budget alignment.',
+            attendees: ['Alex Morgan', 'Sofia Reyes']
+          },
+          {
+            id: createId(),
+            time: '13:00',
+            title: 'Campaign sync with marketing',
+            status: 'pending',
+            notes: 'Review launch checklist and creative feedback.',
+            attendees: ['Jamie Lee', 'Priya Desai', 'Marketing Team']
+          }
+        ],
+        '2024-03-12': [
+          {
+            id: createId(),
+            time: '11:00',
+            title: 'Quarterly planning session',
+            status: 'confirmed',
+            notes: 'Finalize OKRs and assign owners for Q2.',
+            attendees: ['Leadership Team']
+          }
+        ],
+        '2024-03-18': [
+          {
+            id: createId(),
+            time: '10:00',
+            title: 'Client onboarding walkthrough',
+            status: 'confirmed',
+            notes: 'Introduce onboarding specialists and timeline overview.',
+            attendees: ['Chris Wilson', 'Onboarding Crew']
+          },
+          {
+            id: createId(),
+            time: '15:30',
+            title: 'Support process review',
+            status: 'cancelled',
+            notes: 'Reschedule after support tooling update.',
+            attendees: ['Support Leads']
+          }
+        ]
+      }
+    };
+
+    function formatDateKey(date) {
+      return date.toISOString().split('T')[0];
+    }
+
+    function formatDateRange(date) {
+      const formatter = new Intl.DateTimeFormat('en', { weekday: 'long', month: 'long', day: 'numeric' });
+      return formatter.format(date);
+    }
+
+    function getMonthLabel(date) {
+      const formatter = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' });
+      return formatter.format(date);
+    }
+
+    function getAvailability(count) {
+      if (count === 0) return 'All slots open';
+      if (count === 1) return 'High availability';
+      if (count === 2) return 'Moderate availability';
+      return 'Almost full';
+    }
+
+    function renderCalendar() {
+      calendarDays.innerHTML = '';
+      const year = state.currentDate.getFullYear();
+      const month = state.currentDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const startDay = (firstDay.getDay() + 6) % 7; // Monday as first day
+      const totalDays = lastDay.getDate();
+      const todayKey = formatDateKey(new Date());
+
+      for (let i = 0; i < startDay; i++) {
+        const placeholder = document.createElement('div');
+        placeholder.setAttribute('aria-hidden', 'true');
+        calendarDays.appendChild(placeholder);
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const date = new Date(year, month, day);
+        const dateKey = formatDateKey(date);
+        const count = state.appointments[dateKey]?.length || 0;
+        const availability = getAvailability(count);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'day';
+        button.dataset.key = dateKey;
+        button.dataset.count = count;
+        button.innerHTML = `<span>${day}</span><span class="availability">${availability}</span>`;
+        button.setAttribute('aria-label', `${formatDateRange(date)} • ${availability}`);
+
+        if (dateKey === todayKey) {
+          button.classList.add('today');
+        }
+
+        if (state.selectedDate === dateKey) {
+          button.classList.add('selected');
+        }
+
+        button.addEventListener('click', () => {
+          state.selectedDate = dateKey;
+          renderCalendar();
+          renderAppointments();
+        });
+
+        calendarDays.appendChild(button);
+      }
+
+      monthLabel.textContent = getMonthLabel(state.currentDate);
+    }
+
+    function appointmentStatusClass(status) {
+      return {
+        confirmed: 'pill pill--status-confirmed',
+        pending: 'pill pill--status-pending',
+        cancelled: 'pill pill--status-cancelled'
+      }[status] || 'pill';
+    }
+
+    function renderAppointments() {
+      const dateKey = state.selectedDate;
+      const filterQuery = searchInput.value.trim().toLowerCase();
+      appointmentsContainer.innerHTML = '';
+      attendeesContainer.innerHTML = '';
+
+      if (!dateKey) {
+        detailTitle.textContent = 'Select a date';
+        detailMeta.innerHTML = '';
+        appointmentsContainer.innerHTML = `<div class="empty-state"><strong>No date selected</strong><span>Choose a day in the calendar to view appointments and attendees.</span></div>`;
+        attendeesContainer.innerHTML = `<div class="empty-state"><span>Select a meeting to see attendees and notes.</span></div>`;
+        return;
+      }
+
+      const selectedDate = new Date(dateKey);
+      const formattedDate = formatDateRange(selectedDate);
+      const list = state.appointments[dateKey] || [];
+      const filtered = list.filter(app => {
+        if (!filterQuery) return true;
+        const target = `${app.title} ${app.attendees.join(' ')} ${app.notes}`.toLowerCase();
+        return target.includes(filterQuery);
+      }).sort((a, b) => a.time.localeCompare(b.time));
+
+      detailTitle.textContent = formattedDate;
+      detailMeta.innerHTML = `<span>📍 In office</span><span>🕒 ${list.length} meeting${list.length === 1 ? '' : 's'}</span>`;
+
+      if (filtered.length === 0) {
+        appointmentsContainer.innerHTML = `<div class="empty-state"><strong>No appointments</strong><span>You're free for now. Create a new appointment or pick another day.</span></div>`;
+        attendeesContainer.innerHTML = `<div class="empty-state"><span>No attendees scheduled.</span></div>`;
+        return;
+      }
+
+      const uniqueAttendees = new Map();
+
+      filtered.forEach(app => {
+        const card = document.createElement('article');
+        card.className = 'appointment-card';
+        card.innerHTML = `
+          <div class="appointment-header">
+            <div>
+              <strong style="font-size:1rem;display:block;">${app.title}</strong>
+              <span style="font-size:0.85rem;color:var(--muted);">${app.time}</span>
+            </div>
+            <span class="${appointmentStatusClass(app.status)}">${app.status}</span>
+          </div>
+          <p style="margin:0;font-size:0.85rem;color:var(--muted);line-height:1.6;">${app.notes || 'No additional notes.'}</p>
+          <div class="appointment-footer">
+            <div class="tags">${app.attendees.map(person => `<span>${person}</span>`).join('')}</div>
+            <button type="button" class="secondary-btn" data-id="${app.id}">Mark done</button>
+          </div>
+        `;
+        const markDoneBtn = card.querySelector('button[data-id]');
+        markDoneBtn.addEventListener('click', () => toggleStatus(app.id, dateKey));
+        appointmentsContainer.appendChild(card);
+
+        app.attendees.forEach(person => {
+          if (!uniqueAttendees.has(person)) {
+            uniqueAttendees.set(person, []);
+          }
+          uniqueAttendees.get(person).push(app);
+        });
+      });
+
+      attendeesContainer.innerHTML = '';
+      uniqueAttendees.forEach((meetings, person) => {
+        const attendee = document.createElement('div');
+        attendee.className = 'attendee';
+        attendee.innerHTML = `
+          <div>
+            <strong>${person}</strong>
+            <span>${meetings.length} meeting${meetings.length === 1 ? '' : 's'}</span>
+          </div>
+          <button type="button">Message</button>
+        `;
+        attendeesContainer.appendChild(attendee);
+      });
+    }
+
+    function toggleStatus(id, dateKey) {
+      const list = state.appointments[dateKey];
+      if (!list) return;
+      const appointment = list.find(item => item.id === id);
+      if (!appointment) return;
+
+      appointment.status = appointment.status === 'confirmed' ? 'pending' : 'confirmed';
+      renderAppointments();
+    }
+
+    function navigateMonth(offset) {
+      const current = state.currentDate;
+      const newDate = new Date(current.getFullYear(), current.getMonth() + offset, 1);
+      const selected = state.selectedDate ? new Date(state.selectedDate) : null;
+      state.currentDate = newDate;
+      const keepSelection = selected && selected.getMonth() === newDate.getMonth() && selected.getFullYear() === newDate.getFullYear();
+      if (!keepSelection) {
+        state.selectedDate = null;
+      }
+      renderCalendar();
+      renderAppointments();
+    }
+
+    function toggleSharePanel() {
+      const isHidden = sharePanel.hasAttribute('hidden');
+      sharePanel.toggleAttribute('hidden', !isHidden);
+      shareToggleBtn.setAttribute('aria-expanded', String(isHidden));
+      if (!isHidden) {
+        shareSwitch.checked = false;
+        shareTargets.hidden = true;
+      }
+    }
+
+    function toggleShareTargets() {
+      shareTargets.hidden = !shareSwitch.checked;
+    }
+
+    function openModal() {
+      modalBackdrop.style.display = 'flex';
+      appointmentForm.reset();
+      if (state.selectedDate) {
+        appointmentForm.elements.date.value = state.selectedDate;
+      }
+      appointmentForm.elements.title.focus();
+    }
+
+    function closeModal() {
+      modalBackdrop.style.display = 'none';
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      const data = new FormData(appointmentForm);
+      const entry = {
+        id: createId(),
+        title: data.get('title').trim(),
+        date: data.get('date'),
+        time: data.get('time'),
+        status: data.get('status'),
+        notes: data.get('notes').trim(),
+        attendees: data.get('attendees').split(',').map(a => a.trim()).filter(Boolean)
+      };
+
+      if (!entry.date) return;
+      const dateKey = entry.date;
+      const createdDate = new Date(dateKey);
+      if (!state.appointments[dateKey]) {
+        state.appointments[dateKey] = [];
+      }
+      state.appointments[dateKey].push(entry);
+      state.selectedDate = dateKey;
+      state.currentDate = new Date(createdDate.getFullYear(), createdDate.getMonth(), 1);
+      closeModal();
+      renderCalendar();
+      renderAppointments();
+    }
+
+    prevMonthBtn.addEventListener('click', () => navigateMonth(-1));
+    nextMonthBtn.addEventListener('click', () => navigateMonth(1));
+    searchInput.addEventListener('input', renderAppointments);
+    shareToggleBtn.addEventListener('click', toggleSharePanel);
+    shareSwitch.addEventListener('change', toggleShareTargets);
+    addAppointmentBtn.addEventListener('click', openModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelModalBtn.addEventListener('click', closeModal);
+    appointmentForm.addEventListener('submit', handleSubmit);
+    modalBackdrop.addEventListener('click', event => {
+      if (event.target === modalBackdrop) {
+        closeModal();
+      }
+    });
+    window.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && modalBackdrop.style.display === 'flex') {
+        closeModal();
+      }
+    });
+
+    const todayKey = formatDateKey(new Date());
+    if (state.appointments[todayKey]) {
+      state.selectedDate = todayKey;
+    }
+
+    renderCalendar();
+    renderAppointments();
+  </script>
+</body>
+</html>
